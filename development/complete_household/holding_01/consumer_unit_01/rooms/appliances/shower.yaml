@@ -1,0 +1,80 @@
+%YAML 1.2
+---
+
+# General Data
+Name: Shower
+Block_Length:   900
+
+# Usage possibilities
+Usage_Patterns:
+  - Pattern:
+    Name:           shower
+    Type:           waste_water
+    Usage_Length:   810
+    Usage_t:        [60, 65, 800, 805]
+    Usage_val:      [0.0, 0.1, 0.1, 0.0]
+
+  - Pattern:
+    Name:           shower
+    Type:           water_demand
+    Usage_Length:   810
+    Usage_t:        [60, 65, 800, 805]
+    Usage_val:      [0.0, 0.1, 0.1, 0.0]
+
+
+# any events & translators at this level
+Events:
+  - Event: 
+    Name: make_clean
+    Type: Activate
+    Switch: True
+
+    Effects:
+    
+      - Target:       $appliance.$replace_user
+        Action:       $storage_cleanliness.storage.empty
+        Effect_Type:  None
+
+  - Event:
+    Name:   start_leak_Shower
+    Type:   Probability
+    Probability:
+      Type:      Function
+      Function: $cu.$passedTime_Shower_leak_timer.$get_value_function
+
+    Effects:
+
+      - Target:      $appliance
+        Action:      usage_pattern.add
+        Effect_Type: Usage_Pattern
+
+        Pattern:
+          Name:         shower_leak
+          Type:         waste_water
+          Usage_Length: 3600
+          Usage_t:      [0, 3600]
+          Usage_val:    [0.1, 0.1]
+
+      - Target:      $appliance
+        Action:      usage_pattern.add
+        Effect_Type: Usage_Pattern
+
+        Pattern:
+          Name:         shower_leak
+          Type:         water_demand
+          Usage_Length: 3600
+          Usage_t:      [0, 3600]
+          Usage_val:    [0.1, 0.1]
+
+      - Target:      $cu.$replace_all_agents
+        Action:      event.activate.fix_leak_Shower
+        Effect_Type: None
+
+      - Target:      $self
+        Action:      event.deactivate.start_leak_Shower
+        Effect_Type: None
+
+      - Target:      $cu.$passedTime_Shower_fix_timer
+        Action:      passed_time.empty
+        Effect_Type: None
+

@@ -1,0 +1,84 @@
+%YAML 1.2
+---
+
+# General Data
+Name: Tap_kitchen
+Block_Length:   135
+
+# Usage possibilities
+Usage_Patterns:
+  - Pattern:
+    Name:           Tap_kitchen
+    Type:           waste_water
+    Usage_Length:   120
+    Usage_t:        [110, 112, 114, 115]
+    Usage_val:      [0.0, 0.0001, 0.0001, 0.0]
+
+  - Pattern:
+    Name:           Tap_kitchen
+    Type:           water_demand
+    Usage_Length:   120
+    Usage_t:        [110, 112, 114, 115]
+    Usage_val:      [0.0, 0.0001, 0.0001, 0.0]
+
+
+# any events & translators at this level
+Events:
+  - Event: 
+    Name: generate_dirty_dishes
+    Type: Activate
+    Switch: True
+
+    Effects:
+    
+      - Target:       $cu.$storage_dirty_dishes
+        Action:       storage.add_volume
+        Effect_Type:  Probability
+        Probability:
+          Type: Constant
+          Val_const: 0.1
+
+
+  - Event:
+    Name:   start_leak_Tap_kitchen
+    Type:   Probability
+    Probability:
+      Type:      Function
+      Function: $cu.$passedTime_Tap_kitchen_leak_timer.$get_value_function
+
+    Effects:
+
+      - Target:      $appliance
+        Action:      usage_pattern.add
+        Effect_Type: Usage_Pattern
+
+        Pattern:
+          Name:         tap_kitchen_leak
+          Type:         waste_water
+          Usage_Length: 3600
+          Usage_t:      [0, 3600]
+          Usage_val:    [0.1, 0.1]
+
+      - Target:      $appliance
+        Action:      usage_pattern.add
+        Effect_Type: Usage_Pattern
+
+        Pattern:
+          Name:         tap_kitchen_leak
+          Type:         water_demand
+          Usage_Length: 3600
+          Usage_t:      [0, 3600]
+          Usage_val:    [0.1, 0.1]
+
+      - Target:      $cu.$replace_all_agents
+        Action:      event.activate.fix_leak_Tap_kitchen
+        Effect_Type: None
+
+      - Target:      $self
+        Action:      event.deactivate.start_leak_Tap_kitchen
+        Effect_Type: None
+
+      - Target:      $cu.$passedTime_Tap_kitchen_fix_timer
+        Action:      passed_time.empty
+        Effect_Type: None
+

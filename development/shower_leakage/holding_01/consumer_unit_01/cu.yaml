@@ -1,0 +1,51 @@
+%YAML 1.2
+---
+
+# general data
+Name: Flat01
+
+# all rooms
+Rooms:
+- holding_01/consumer_unit_01/rooms/wc.yaml
+
+# all agents
+Agents:
+- holding_01/consumer_unit_01/agents/person001.yaml
+
+
+
+# any events & translators at this level
+Timed_Storages:
+
+  - Storage:
+    Name:    shower_leak_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 86400, 129600]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+  - Storage:
+    Name:    shower_fix_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 129600, 259200]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+      - Translator:
+        Active_for:   Inactive
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 129600]
+        Table_y:      [0.0, 0.0]

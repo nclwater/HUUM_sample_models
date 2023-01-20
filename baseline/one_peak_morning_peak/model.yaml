@@ -1,0 +1,10 @@
+%YAML 1.2
+---
+
+# one or more occurrence of
+Holdings:  
+- holding_01/holding.yaml
+
+
+
+# any events & translators at this level

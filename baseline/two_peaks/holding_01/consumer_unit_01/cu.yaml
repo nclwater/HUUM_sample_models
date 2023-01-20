@@ -1,0 +1,22 @@
+%YAML 1.2
+---
+
+# general data
+Name: Flat01
+
+# all rooms
+Rooms:
+- holding_01/consumer_unit_01/rooms/kitchen.yaml
+- holding_01/consumer_unit_01/rooms/wc.yaml
+
+# all agents
+Agents:
+- holding_01/consumer_unit_01/agents/person001.yaml
+
+
+
+# Translators ------------------------------------------------------------------
+
+# Storages .....................................................................
+
+# Timed Storages ...............................................................

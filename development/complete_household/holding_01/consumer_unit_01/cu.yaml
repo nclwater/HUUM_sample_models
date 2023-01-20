@@ -1,0 +1,267 @@
+%YAML 1.2
+---
+
+# general data
+Name: Flat01
+
+# all rooms
+Rooms:
+- holding_01/consumer_unit_01/rooms/kitchen.yaml
+- holding_01/consumer_unit_01/rooms/wc.yaml
+
+# all agents
+Agents:
+- holding_01/consumer_unit_01/agents/person001.yaml
+
+
+
+# Translators ------------------------------------------------------------------
+
+# Storages .....................................................................
+Storages:
+
+  - Storage:
+    Name: dirty_clothes
+
+    Rates:
+      - Rate:
+        Name:      standard_dirty_clothes_increase
+        Type:      constant
+        Const_Val: 0.000013888888
+    
+    Translators:
+      - Translator:
+        Return_above: last
+        Active_for:   default          # the default / catch-all translator to be used
+        Table_x:      [0.0, 6.0, 8.0]
+        Table_y:      [0.0, 0.00, 0.9]
+
+      - Translator:
+        Return_above: last
+        Active_for:   Inactive
+        Table_x:      [0.0, 10000.0]
+        Table_y:      [0.0, 0.0000]
+
+  - Storage:
+    Name: dirty_dishes
+
+    Rates:
+      - Rate:
+        Name:      standard_dirty_dishes_increase
+        Type:      constant
+        Const_Val: 0.0
+    
+    Translators:
+      - Translator:
+        Return_above: last
+        Active_for:   default          # the default / catch-all translator to be used
+        Table_x:      [0.0, 5.0, 8.0]
+        Table_y:      [0.0, 0.00, 0.9]
+
+      - Translator:
+        Return_above: last
+        Active_for:   Inactive
+        Table_x:      [0.0, 10000.0]
+        Table_y:      [0.0, 0.0000]
+
+
+# Timed Storages ...............................................................
+Timed_Storages:
+
+  - Storage:
+    Name:    Tap_wc_leak_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 86400, 129600]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+  - Storage:
+    Name:    Tap_wc_fix_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 86400, 129600]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+      - Translator:
+        Active_for:   Inactive
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 129600]
+        Table_y:      [0.0, 0.0]
+
+  - Storage:
+    Name:    Tap_kitchen_leak_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 86400, 129600]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+  - Storage:
+    Name:    Tap_kitchen_fix_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 86400, 129600]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+      - Translator:
+        Active_for:   Inactive
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 129600]
+        Table_y:      [0.0, 0.0]
+
+  - Storage:
+    Name:    Toilet_leak_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 172800, 259200]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+  - Storage:
+    Name:    Toilet_fix_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 172800, 259200]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+      - Translator:
+        Active_for:   Inactive
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 259200]
+        Table_y:      [0.0, 0.0]
+
+  - Storage:
+    Name:    Dishwasher_leak_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 259200, 345600]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+  - Storage:
+    Name:    Dishwasher_fix_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 259200, 345600]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+      - Translator:
+        Active_for:   Inactive
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 129600]
+        Table_y:      [0.0, 0.0]
+
+  - Storage:
+    Name:    Washing_machine_leak_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 259200, 345600]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+  - Storage:
+    Name:    Washing_machine_fix_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 259200, 345600]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+      - Translator:
+        Active_for:   Inactive
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 345600]
+        Table_y:      [0.0, 0.0]
+
+  - Storage:
+    Name:    Shower_leak_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 86400, 129600]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+  - Storage:
+    Name:    Shower_fix_timer
+    Start_t: 2010-02-13 14:00
+
+    Translators:
+
+      - Translator:
+        Active_for:   default
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 86400, 129600]
+        Table_y:      [0.0, 0.00001, 0.9]
+
+      - Translator:
+        Active_for:   Inactive
+        Return_below: first
+        Return_above: last
+        Table_x:      [0.0, 129600]
+        Table_y:      [0.0, 0.0]

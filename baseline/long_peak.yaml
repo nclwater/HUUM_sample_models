@@ -1,0 +1,33 @@
+# equiv of Sample 01 in the HUUM prototype
+%YAML 1.2
+---
+Title:          long_peak_baseline
+# for manual optimisation according to property 0073 - comlog 2017
+# numbers skewed for the timestep - needs fixing
+
+# things to do with files and folders
+File_Model:     model.yaml
+Dir_ModelRoot:  baseline/long_peak/
+Dir_Output:     output/long_peak/
+
+# things with model internal date & times
+Time_Start:     2017-01-01 00:00
+Time_End:       2017-12-31 23:45
+t_step_min:     180           # [sec]
+t_step_max:     180         # [sec] 
+
+# logging
+log_as_Single:   True
+log_Wants:       False
+log_PassedTime:  False
+log_Storage:     False
+log_Probability: False
+log_TS_Outputs:  True
+log_Activation:  False
+#logging_Type:    all
+
+# other data
+Seed:           SomeThingGiven
+
+
+

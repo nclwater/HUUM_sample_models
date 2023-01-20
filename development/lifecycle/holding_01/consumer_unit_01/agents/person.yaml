@@ -1,0 +1,108 @@
+%YAML 1.2
+---
+
+Name:   Person
+
+Lifecycle:
+
+  # starting lifecycle .........................................................
+  - Name:           Initial
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  WakeUp
+    
+    Changeover_Time:
+      Type:       Constant
+      Val_const:  21600
+
+  # work week cycle ............................................................
+  - Name:           WakeUp
+    Habit_Status:   Active
+    
+    Next:
+      Default:  Leave
+    
+    Changeover_Time:
+      Type:       Constant
+      Val_const:  21600
+      
+  - Name:           Leave
+    Habit_Status:   Away
+    
+    Next:
+      Default:  Return
+    
+    Changeover_Time:
+      Type:       Constant
+      Val_const:  28800
+
+  - Name:           Return
+    Habit_Status:   Active
+    
+    Next:
+      Default:  Sleep
+      
+      Alternatives:
+        - alternate:
+          Condition_Expression: $WeekDay == Friday
+          Target:               LateSleep
+    
+    Changeover_Time:
+      Type:       Uniform
+      Val_from:   63900
+      Val_to:     65700
+
+  - Name:           Sleep
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  WakeUp
+    
+    Changeover_Time:
+      Type:       Uniform
+      Val_from:   78300
+      Val_to:     80100
+
+# Weekend
+  - Name:           LateSleep
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  we_day
+    
+    Changeover_Time:
+      Type:       Uniform
+      Val_from:   89800
+      Val_to:     97400
+
+  - Name:           we_day
+    Habit_Status:   Active_we
+    
+    Next:
+      Default:  we_night
+    
+    Changeover_Time:
+      Type:       Uniform
+      Val_from:   32400
+      Val_to:     39600
+
+  - Name:           we_night
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  we_day
+      
+      Alternatives:
+        - alternate:
+          Condition_Expression: $WeekDay == Sunday
+          Target:               WakeUp
+    
+    Changeover_Time:
+      Type:       Uniform
+      Val_from:   80400
+      Val_to:     85200
+
+
+
+# any events & translators at this level

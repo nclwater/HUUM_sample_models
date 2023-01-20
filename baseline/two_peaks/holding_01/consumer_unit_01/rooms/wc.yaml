@@ -1,0 +1,17 @@
+%YAML 1.2
+---
+
+# General Info
+Name: WC
+
+# appliances
+Appliances:
+- holding_01/consumer_unit_01/rooms/appliances/tap_wc.yaml
+- holding_01/consumer_unit_01/rooms/appliances/toilet.yaml
+- holding_01/consumer_unit_01/rooms/appliances/shower.yaml
+
+
+
+# any events & translators at this level
+
+

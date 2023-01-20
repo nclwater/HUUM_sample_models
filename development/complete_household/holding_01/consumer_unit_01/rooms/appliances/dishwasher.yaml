@@ -1,0 +1,80 @@
+%YAML 1.2
+---
+
+# General Data
+Name: Dishwasher
+Block_Length:   300
+
+# Usage possibilities
+Usage_Patterns:
+  - Pattern:
+    Name:           Dishwasher
+    Type:           waste_water
+    Usage_Length:   5820
+    Usage_t:        [5700, 5720, 5800, 5810]
+    Usage_val:      [0.0, 0.01, 0.01, 0.0]
+
+  - Pattern:
+    Name:           Dishwasher
+    Type:           water_demand
+    Usage_Length:   150
+    Usage_t:        [30, 50, 130, 140]
+    Usage_val:      [0.0, 0.01, 0.01, 0.0]
+
+
+# any events & translators at this level
+Events:
+  - Event: 
+    Name: empty_dirty_dishes
+    Type: Activate
+    Switch: True
+
+    Effects:
+    
+      - Target:       $cu.$storage_dirty_dishes
+        Action:       storage.empty
+        Effect_Type:  None
+
+  - Event:
+    Name:   start_leak_Dishwasher
+    Type:   Probability
+    Probability:
+      Type:      Function
+      Function: $cu.$passedTime_Dishwasher_leak_timer.$get_value_function
+
+    Effects:
+
+      - Target:      $appliance
+        Action:      usage_pattern.add
+        Effect_Type: Usage_Pattern
+
+        Pattern:
+          Name:         dishwasher_leak
+          Type:         waste_water
+          Usage_Length: 3600
+          Usage_t:      [0, 3600]
+          Usage_val:    [0.1, 0.1]
+
+      - Target:      $appliance
+        Action:      usage_pattern.add
+        Effect_Type: Usage_Pattern
+
+        Pattern:
+          Name:         dishwasher_leak
+          Type:         water_demand
+          Usage_Length: 3600
+          Usage_t:      [0, 3600]
+          Usage_val:    [0.1, 0.1]
+
+      - Target:      $cu.$replace_all_agents
+        Action:      event.activate.fix_leak_Dishwasher
+        Effect_Type: None
+
+      - Target:      $self
+        Action:      event.deactivate.start_leak_Dishwasher
+        Effect_Type: None
+
+      - Target:      $cu.$passedTime_Dishwasher_fix_timer
+        Action:      passed_time.empty
+        Effect_Type: None
+

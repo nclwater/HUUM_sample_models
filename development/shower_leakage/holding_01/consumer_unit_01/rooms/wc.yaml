@@ -1,0 +1,15 @@
+%YAML 1.2
+---
+
+# General Info
+Name: wc
+
+# appliances
+Appliances:
+- holding_01/consumer_unit_01/rooms/appliances/shower.yaml
+
+
+
+# any events & translators at this level
+
+

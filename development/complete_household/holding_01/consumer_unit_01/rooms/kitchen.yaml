@@ -1,0 +1,17 @@
+%YAML 1.2
+---
+
+# General Info
+Name: Kitchen
+
+# appliances
+Appliances:
+- holding_01/consumer_unit_01/rooms/appliances/tap_kitchen.yaml
+- holding_01/consumer_unit_01/rooms/appliances/dishwasher.yaml
+- holding_01/consumer_unit_01/rooms/appliances/washing_machine.yaml
+
+
+
+# any events & translators at this level
+
+

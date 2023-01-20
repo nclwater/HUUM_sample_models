@@ -1,0 +1,219 @@
+%YAML 1.2
+---
+
+# Weekly living cycle
+Name:   Person_storage
+
+Lifecycle:
+
+  # starting lifecycle .........................................................
+  - Name:           Initial
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  WakeUp
+    
+    Changeover_Time:
+      Type:       Constant
+      Val_const:  21600
+
+  # work week cycle ............................................................
+  - Name:           WakeUp
+    Habit_Status:   Active_morning
+    
+    Next:
+      Default:  Leave
+    
+    Changeover_Time:
+      Type:       Constant
+      Val_const:  21600
+      
+  - Name:           Leave
+    Habit_Status:   Away
+    
+    Next:
+      Default:  Return
+    
+    Changeover_Time:
+      Type:       Constant
+      Val_const:  28800
+
+  - Name:           Return
+    Habit_Status:   Active_evening
+    
+    Next:
+      Default:  Sleep
+      
+      Alternatives:
+        - alternate:
+          Condition_Expression: $WeekDay == Friday
+          Target:               LateSleep
+    
+    Changeover_Time:
+      Type:       Uniform
+      Val_from:   63900
+      Val_to:     65700
+
+  - Name:           Sleep
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  WakeUp
+    
+    Changeover_Time:
+      Type:       Constant
+      Val_const:  79200
+
+# Weekend
+  - Name:           LateSleep
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  we_day
+    
+    Changeover_Time:
+      Type:       Constant
+      Val_const:  93600
+
+  - Name:           we_day
+    Habit_Status:   Active_we
+    
+    Next:
+      Default:  we_night
+    
+    Changeover_Time:
+      Type:       Constant
+      Val_const:  36000
+
+  - Name:           we_night
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  we_day
+      
+      Alternatives:
+        - alternate:
+          Condition_Expression: $WeekDay == Sunday
+          Target:               WakeUp
+    
+    Changeover_Time:
+      Type:       Constant
+      Val_const:  93600
+
+
+# Usage Habits -----------------------------------------------------------------
+
+# Set Ones .....................................................................
+Usage_Habits:
+
+  # Shower - switch
+  - Habit:
+    Name:             Shower_switch
+    Appliance:        Shower
+    Valid_t_Start:    $Model_Start
+    Valid_t_End:      $Model_End
+    Computation_Type: mult
+    Data:
+      Type:           Function
+      Function:       $agent.$storage_cleanliness.$get_value_function
+
+# Situational Ones .............................................................
+Usage_Templates:
+
+  # Toilet
+  # after getting up and before going to sleep
+  - Habit:
+    Name:               shower.active.start
+    Appliance:          shower
+    Valid_When:         Active_morning
+    Type:               Start
+    Duration:           901
+    Computation_Type:   add
+    Probability_t:      [60, 120, 720, 900]
+    Probability_Value:  [0.0, 0.01, 0.5, 0.0]
+
+  - Habit:
+    Name:               shower.active.end
+    Appliance:          shower
+    Valid_When:         Active_evening
+    Type:               End
+    Duration:           901
+    Computation_Type:   add
+    Probability_t:      [60, 120, 720, 900]
+    Probability_Value:  [0.0, 0.01, 0.5, 0.0]
+
+  - Habit:
+    Name:               shower.active.we.start
+    Appliance:          shower
+    Valid_When:         Active_we
+    Type:               Start
+    Duration:           901
+    Computation_Type:   add
+    Probability_t:      [60, 120, 720, 900]
+    Probability_Value:  [0.0, 0.01, 0.5, 0.0]
+
+  - Habit:
+    Name:               shower.active.we.end
+    Appliance:          shower
+    Valid_When:         Active_we
+    Type:               End
+    Duration:           901
+    Computation_Type:   add
+    Probability_t:      [60, 120, 720, 900]
+    Probability_Value:  [0.0, 0.01, 0.5, 0.0]
+
+
+
+
+
+
+# Events -----------------------------------------------------------------------
+Events:
+  - Event: 
+    Name:           fix_leak_shower
+    Type:           Probability
+    Probability:    
+      Type:         Function
+      Function:     $cu.$passedTime_shower_fix_timer.$get_value_function
+    Active:         False
+
+    Effects:
+      - Target:       $cu.$room_wc.$appliance_shower
+        Action:       usage_pattern.del
+        Effect_Type:  Target
+        Target_Data:  shower_leak
+
+      - Target:       $cu.$replace_all_agents
+        Action:       event.deactivate.fix_leak_shower
+        Effect_Type:  None
+
+      - Target:       $cu.$room_wc.$appliance_shower
+        Action:       event.activate.start_leak_shower
+        Effect_Type:  None
+
+      - Target:       $cu.$passedTime_shower_leak_timer
+        Action:       passed_time.empty
+        Effect_Type:  None
+
+
+# Translators ------------------------------------------------------------------
+Storages:
+
+  - Storage:
+    Name: cleanliness
+
+    Rates:
+      - Rate:
+        Name:      standard_cleanliness_increase
+        Type:      constant
+        Const_Val: 0.1
+    
+    Translators:
+      - Translator:
+        Return_above: last
+        Active_for:   default          # the default / catch-all translator to be used
+        Table_x:      [0.0, 3600, 3600.0]
+        Table_y:      [0.0, 0.0, 1.0]
+
+
+

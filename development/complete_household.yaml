@@ -1,0 +1,25 @@
+# equiv of Sample 01 in the HUUM prototype
+%YAML 1.2
+---
+Title:          Development Model 3 - Complete Household Model
+
+# things to do with files and folders
+File_Model:     model.yaml
+Dir_ModelRoot:  development/complete_household/
+Dir_Output:     output/complete_household/
+
+# things with model internal date & times
+Time_Start:     2012-12-13 00:00
+Time_End:       2012-12-20 00:00
+t_step_min:     1           # [sec]
+t_step_max:     1           # [sec] 
+
+# logging
+log_passedTime: True
+log_storage:    True
+
+# other data
+Seed:           SomeThingGiven
+
+
+

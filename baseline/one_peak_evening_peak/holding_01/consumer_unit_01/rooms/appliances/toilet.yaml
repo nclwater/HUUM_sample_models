@@ -1,0 +1,50 @@
+%YAML 1.2
+---
+
+# General Data
+Name: Toilet
+Block_Length:   360
+
+# Usage possibilities
+Usage_Patterns:
+
+  - Pattern:
+    Name:           Toilet
+    Type:           water_demand
+    Usage_Length:   360
+    Usage_t:        [0, 180]
+    Usage_val:      [0.0, 7.0]
+
+
+# any events & translators at this level
+Events:
+  - Event: 
+    Name:   after_loo
+    Type:   Activate
+    Switch: True
+
+    Effects:
+      - Target:      $appliance.$replace_user
+        Action:      probability.add
+        Effect_Type: Event_Usage_Habit_Template
+        Habit:
+          Appliance:         Tap_wc
+          Name:              $Tap_wc.event_after_Toilet
+          Valid_When:        None
+          Type:              Start
+          Duration:          70
+          Computation_Type:  add
+          Probability_t:     [15, 20, 60, 65]
+          Probability_Value: [0.0, 0.5, 0.5, 0.0]
+
+  - Event: 
+    Name: empty_bladder
+    Type: Activate
+    Switch: True
+
+    Effects:
+    
+      - Target:       $appliance.$replace_user
+        Action:       $storage_bladder.storage.empty
+        Effect_Type:  None
+

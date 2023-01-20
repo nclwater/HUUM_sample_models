@@ -1,0 +1,198 @@
+%YAML 1.2
+---
+
+# Weekly living cycle
+Name:   Person001
+
+Lifecycle:
+
+  # starting lifecycle .........................................................
+  - Name:           Initial
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  Awake
+    
+    Changeover_Time:
+      Type:       Gauss
+      Mu:         25000
+      Sigma:       2700
+
+  # work week cycle ............................................................
+  - Name:           Awake
+    Habit_Status:   Active
+    
+    Next:
+      Default:  Sleep
+    
+    Changeover_Time:
+      Type:       Gauss
+      Mu:         25000
+      Sigma:       2700
+
+  - Name:           Sleep
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  Awake
+    
+    Changeover_Time:
+      Type:       Gauss
+      Mu:         75600
+      Sigma:       2700
+
+
+# Usage Habits -----------------------------------------------------------------
+
+# Set Ones .....................................................................
+Usage_Habits:
+
+  # Nighttime Toilet
+  - Habit:
+    Name:             Toilet_inactive
+    Appliance:        Toilet
+    Valid_When:       Inactive
+    Valid_t_Start:    $Model_Start
+    Valid_t_End:      $Model_End
+    Computation_Type: add
+    Data:
+      Type:           Constant
+      Value:          0.005
+
+  # Regular Toilet
+  - Habit:
+    Name:             Toilet_active
+    Appliance:        Toilet
+    Valid_When:       Active
+    Valid_t_Start:    $Model_Start
+    Valid_t_End:      $Model_End
+    Computation_Type: add
+    Data:
+      Type:           Function
+      Function:       $agent.$storage_bladder.$get_value_function
+
+  # Baseline WC-tap
+  - Habit:
+    Name:             Tap_wc.active
+    Appliance:        Tap_wc
+    Valid_When:       Active
+    Valid_t_Start:    $Model_Start
+    Valid_t_End:      $Model_End
+    Computation_Type: add
+    Data:
+      Type:           Constant
+      Value:          0.01
+
+  # Regular kitchen tap
+  - Habit:
+    Name:             Tap_kitchen.active
+    Appliance:        Tap_kitchen
+    Valid_When:       Active
+    Valid_t_Start:    $Model_Start
+    Valid_t_End:      $Model_End
+    Computation_Type: add
+    Data:
+      Type:           Constant
+      Value:          0.02
+
+  # Shower switch
+  - Habit:
+    Name:             Shower.active_switch
+    Appliance:        Shower
+    Valid_t_Start:    $Model_Start
+    Valid_t_End:      $Model_End
+    Computation_Type: mult
+    Data:
+      Type:           Function
+      Function:       $agent.$storage_cleanliness.$get_value_function
+
+# Situational Ones .............................................................
+Usage_Templates:
+
+  # Shower
+  # after getting up and before going to sleep
+  - Habit:
+    Name:               Shower.active.start
+    Appliance:          Shower
+    Valid_When:         Active
+    Type:               Start
+    Duration:           901
+    Computation_Type:   add
+    Probability_t:      [60, 120, 1790, 1800]
+    Probability_Value:  [0.0, 0.01, 1.0, 0.0]
+
+  - Habit:
+    Name:               Toilet.active.start
+    Appliance:          Toilet
+    Valid_When:         Active
+    Type:               Start
+    Duration:           361
+    Computation_Type:   add
+    # Probability_t:      [60, 120, 1790, 1800]
+    # Probability_Value:  [0.0, 0.01, 0.95, 0.0]
+    Probability_t:      [0.0, 360]
+    Probability_Value:  [0.0, 0.9]
+
+  - Habit:
+    Name:               Toilet.active.end
+    Appliance:          Toilet
+    Valid_When:         Active
+    Type:               End
+    # Name:               Toilet.inactive.start
+    # Appliance:          Toilet
+    # Valid_When:         Inactive
+    # Type:               Start
+    Duration:           361
+    Computation_Type:   add
+    # Probability_t:      [60, 120, 1790, 1800]
+    # Probability_Value:  [0.0, 0.01, 0.95, 0.0]
+    Probability_t:      [0.0, 180]
+    Probability_Value:  [0.0, 0.8]
+
+
+# Events -----------------------------------------------------------------------
+
+
+# Translators ------------------------------------------------------------------
+Storages:
+
+  - Storage:
+    Name: bladder
+
+    Rates:
+      - Rate:
+        Name:      standard_bladder_increase
+        Type:      constant
+        Const_Val: 2.0
+    
+    Translators:
+      - Translator:
+        Return_above: last
+        Active_for:   default          # the default / catch-all translator to be used
+        Table_x:      [0.0, 60.0, 80.0]
+        Table_y:      [0.0, 0.001, 0.9]
+
+      - Translator:
+        Return_above: last
+        Active_for:   Inactive
+        Table_x:      [0.0, 600.0, 800.0, 900.0]
+        Table_y:      [0.0, 0.0001, 0.001, 0.9]
+
+  - Storage:
+    Name: cleanliness
+
+    Rates:
+      - Rate:
+        Name:      standard_cleanliness_increase
+        Type:      constant
+        Const_Val: 0.5
+    
+    Translators:
+      - Translator:
+        Return_above: last
+        Active_for:   default          # the default / catch-all translator to be used
+        Table_x:      [0.0, 20, 30]
+        Table_y:      [0.0, 0.0, 1.0]
+
+
+

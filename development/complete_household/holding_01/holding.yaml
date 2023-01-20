@@ -1,0 +1,13 @@
+%YAML 1.2
+---
+
+# general data
+Name: Holding_01
+
+# one or more occurrence of
+Consumer_Units:
+- holding_01/consumer_unit_01/cu.yaml
+
+
+
+# any events & translators at this level

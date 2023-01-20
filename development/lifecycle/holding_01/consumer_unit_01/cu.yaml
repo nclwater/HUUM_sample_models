@@ -1,0 +1,11 @@
+%YAML 1.2
+---
+
+# general data
+Name: Consumer_Unit_01
+
+# all agents
+Agents:
+- holding_01/consumer_unit_01/agents/person.yaml
+
+# any events & translators at this level

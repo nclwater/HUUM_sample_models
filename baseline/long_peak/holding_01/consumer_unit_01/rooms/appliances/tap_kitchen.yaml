@@ -1,0 +1,19 @@
+%YAML 1.2
+---
+
+# General Data
+Name: Tap_kitchen
+Block_Length:   135
+
+# Usage possibilities
+Usage_Patterns:
+
+  - Pattern:
+    Name:           Tap_kitchen
+    Type:           water_demand
+    Usage_Length:   180
+    Usage_t:        [0, 180, 360]
+    Usage_val:      [0.0, 0.4, 0.0]
+
+
+# any events & translators at this level

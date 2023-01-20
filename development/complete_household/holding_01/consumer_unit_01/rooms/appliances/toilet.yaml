@@ -1,0 +1,99 @@
+%YAML 1.2
+---
+
+# General Data
+Name: Toilet
+Block_Length:   360
+
+# Usage possibilities
+Usage_Patterns:
+  - Pattern:
+    Name:           Toilet
+    Type:           waste_water
+    Usage_Length:   360
+    Usage_t:        [60, 90, 180, 210]
+    Usage_val:      [0.0, 1.0, 1.0, 0.0]
+
+  - Pattern:
+    Name:           Toilet
+    Type:           water_demand
+    Usage_Length:   360
+    Usage_t:        [70, 100, 280, 310]
+    Usage_val:      [0.0, 0.5, 0.5, 0.0]
+
+
+# any events & translators at this level
+Events:
+  - Event: 
+    Name:   after_loo
+    Type:   Activate
+    Switch: True
+
+    Effects:
+      - Target:      $appliance.$replace_user
+        Action:      probability.add
+        Effect_Type: Event_Usage_Habit_Template
+        Habit:
+          Appliance:         Tap_wc
+          Name:              $Tap_wc.event_after_Toilet
+          Valid_When:        None
+          Type:              Start
+          Duration:          70
+          Computation_Type:  add
+          Probability_t:     [15, 20, 60, 65]
+          Probability_Value: [0.0, 0.5, 0.5, 0.0]
+
+  - Event: 
+    Name: empty_bladder
+    Type: Activate
+    Switch: True
+
+    Effects:
+    
+      - Target:       $appliance.$replace_user
+        Action:       $storage_bladder.storage.empty
+        Effect_Type:  None
+
+  - Event:
+    Name:   start_leak_Toilet
+    Type:   Probability
+    Probability:
+      Type:      Function
+      Function: $cu.$passedTime_Toilet_leak_timer.$get_value_function
+
+    Effects:
+
+      - Target:      $appliance
+        Action:      usage_pattern.add
+        Effect_Type: Usage_Pattern
+
+        Pattern:
+          Name:         toilet_leak
+          Type:         waste_water
+          Usage_Length: 3600
+          Usage_t:      [0, 3600]
+          Usage_val:    [0.1, 0.1]
+
+      - Target:      $appliance
+        Action:      usage_pattern.add
+        Effect_Type: Usage_Pattern
+
+        Pattern:
+          Name:         toilet_leak
+          Type:         water_demand
+          Usage_Length: 3600
+          Usage_t:      [0, 3600]
+          Usage_val:    [0.1, 0.1]
+
+      - Target:      $cu.$replace_all_agents
+        Action:      event.activate.fix_leak_Toilet
+        Effect_Type: None
+
+      - Target:      $self
+        Action:      event.deactivate.start_leak_Toilet
+        Effect_Type: None
+
+      - Target:      $cu.$passedTime_Toilet_fix_timer
+        Action:      passed_time.empty
+        Effect_Type: None
+

@@ -1,0 +1,29 @@
+%YAML 1.2
+---
+
+# General Data
+Name: Tap_wc
+Block_Length:   90
+
+# Usage possibilities
+Usage_Patterns:
+  - Pattern:
+    Name:           Tap_wc
+    Type:           water_demand
+    Usage_Length:   180
+    Usage_t:        [0, 180]
+    Usage_val:      [0.0, 0.5]
+
+
+# any events & translators at this level
+Events:
+  - Event: 
+    Name: after_Tap_wc_use
+    Type: Activate
+    Switch: True
+
+    Effects:
+      - Target:       $appliance.$replace_user
+        Action:       probability.del
+        Effect_Type:  Target
+        Target_Data:  $tap_wc.event_after_toilet

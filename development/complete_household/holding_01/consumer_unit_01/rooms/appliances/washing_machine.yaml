@@ -1,0 +1,80 @@
+%YAML 1.2
+---
+
+# General Data
+Name: Washing_machine
+Block_Length:   120
+
+# Usage possibilities
+Usage_Patterns:
+  - Pattern:
+    Name:           Washing_machine
+    Type:           waste_water
+    Usage_Length:   9320
+    Usage_t:        [9200, 9220, 9300, 9310]
+    Usage_val:      [0.0, 0.01, 0.01, 0.0]
+
+  - Pattern:
+    Name:           Washing_machine
+    Type:           water_demand
+    Usage_Length:   140
+    Usage_t:        [30, 50, 130, 140]
+    Usage_val:      [0.0, 0.01, 0.01, 0.0]
+
+
+# any events & translators at this level
+Events:
+  - Event: 
+    Name: empty_dirty_clothing
+    Type: Activate
+    Switch: True
+
+    Effects:
+    
+      - Target:       $cu.$storage_dirty_clothes
+        Action:       storage.empty
+        Effect_Type:  None
+
+  - Event:
+    Name:   start_leak_Washing_machine
+    Type:   Probability
+    Probability:
+      Type:      Function
+      Function: $cu.$passedTime_Washing_machine_leak_timer.$get_value_function
+
+    Effects:
+
+      - Target:      $appliance
+        Action:      usage_pattern.add
+        Effect_Type: Usage_Pattern
+
+        Pattern:
+          Name:         Washing_machine_leak
+          Type:         waste_water
+          Usage_Length: 3600
+          Usage_t:      [0, 3600]
+          Usage_val:    [0.1, 0.1]
+
+      - Target:      $appliance
+        Action:      usage_pattern.add
+        Effect_Type: Usage_Pattern
+
+        Pattern:
+          Name:         Washing_machine_leak
+          Type:         water_demand
+          Usage_Length: 3600
+          Usage_t:      [0, 3600]
+          Usage_val:    [0.1, 0.1]
+
+      - Target:      $cu.$replace_all_agents
+        Action:      event.activate.fix_leak_Washing_machine
+        Effect_Type: None
+
+      - Target:      $self
+        Action:      event.deactivate.start_leak_Washing_machine
+        Effect_Type: None
+
+      - Target:      $cu.$passedTime_Washing_machine_fix_timer
+        Action:      passed_time.empty
+        Effect_Type: None
+

@@ -1,0 +1,448 @@
+%YAML 1.2
+---
+
+# Weekly living cycle
+Name:   Person001
+
+Lifecycle:
+
+  # starting lifecycle .........................................................
+  - Name:           Initial
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  WakeUp
+    
+    Changeover_Time:
+      Type:       Constant
+      Val_const:  21600
+
+  # work week cycle ............................................................
+  - Name:           WakeUp
+    Habit_Status:   Active_morning
+    
+    Next:
+      Default:  Leave
+    
+    Changeover_Time:
+      Type:       Constant
+      Val_const:  21600
+      
+  - Name:           Leave
+    Habit_Status:   Away
+    
+    Next:
+      Default:  Return
+    
+    Changeover_Time:
+      Type:       Constant
+      Val_const:  28800
+
+  - Name:           Return
+    Habit_Status:   Active_evening
+    
+    Next:
+      Default:  Sleep
+      
+      Alternatives:
+        - alternate:
+          Condition_Expression: $WeekDay == Friday
+          Target:               LateSleep
+    
+    Changeover_Time:
+      Type:       Uniform
+      Val_from:   63900
+      Val_to:     65700
+
+    Events:
+    - Event: 
+      Name:           reset_bladder_return
+      Type:           Activate
+      Active:         True
+
+      Effects:
+        - Target:       $agent.$storage_bladder
+          Action:       storage.set_random
+          Effect_Type:  Probability
+          Probability:
+            Type:       Uniform
+            Val_from:   0.0
+            Val_to:     700.0
+
+
+  - Name:           Sleep
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  WakeUp
+    
+    Changeover_Time:
+      Type:       Uniform
+      Val_from:   78300
+      Val_to:     80100
+
+# Weekend
+  - Name:           LateSleep
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  we_day
+    
+    Changeover_Time:
+      Type:       Uniform
+      Val_from:   89800
+      Val_to:     97400
+
+  - Name:           we_day
+    Habit_Status:   Active_we
+    
+    Next:
+      Default:  we_night
+    
+    Changeover_Time:
+      Type:       Uniform
+      Val_from:   32400
+      Val_to:     39600
+
+  - Name:           we_night
+    Habit_Status:   Inactive
+    
+    Next:
+      Default:  we_day
+      
+      Alternatives:
+        - alternate:
+          Condition_Expression: $WeekDay == Sunday
+          Target:               WakeUp
+    
+    Changeover_Time:
+      Type:       Uniform
+      Val_from:   80400
+      Val_to:     85200
+
+
+# Usage Habits -----------------------------------------------------------------
+
+# Set Ones .....................................................................
+Usage_Habits:
+
+  # Regular Toilet
+  - Habit:
+    Name:             Toilet_active
+    Appliance:        Toilet
+    Valid_When:       Active
+    Valid_t_Start:    $Model_Start
+    Valid_t_End:      $Model_End
+    Computation_Type: add
+    Data:
+      Type:           Function
+      Function:       $agent.$storage_bladder.$get_value_function
+
+  # Regular dishwasher
+  - Habit:
+    Name:             Dishwasher_active
+    Appliance:        Dishwasher
+    Valid_When:       Active
+    Valid_t_Start:    $Model_Start
+    Valid_t_End:      $Model_End
+    Computation_Type: add
+    Data:
+      Type:           Function
+      Function:       $cu.$storage_dirty_dishes.$get_value_function
+
+  # Regular washing machine
+  - Habit:
+    Name:             Washing_machine_active
+    Appliance:        Washing_machine
+    Valid_When:       Active
+    Valid_t_Start:    $Model_Start
+    Valid_t_End:      $Model_End
+    Computation_Type: add
+    Data:
+      Type:           Function
+      Function:       $agent.$storage_bladder.$get_value_function
+
+  # Baseline WC-tap
+  - Habit:
+    Name:             Tap_wc.active
+    Appliance:        Tap_wc
+    Valid_When:       Active
+    Valid_t_Start:    $Model_Start
+    Valid_t_End:      $Model_End
+    Computation_Type: add
+    Data:
+      Type:           Constant
+      Value:          0.00001
+
+  # Regular kitchen tap
+  - Habit:
+    Name:             Tap_kitchen.active
+    Appliance:        Tap_kitchen
+    Valid_When:       Active
+    Valid_t_Start:    $Model_Start
+    Valid_t_End:      $Model_End
+    Computation_Type: add
+    Data:
+      Type:           Constant
+      Value:          0.001
+
+  # Shower switch
+  - Habit:
+    Name:             Shower.active_switch
+    Appliance:        Shower
+    Valid_t_Start:    $Model_Start
+    Valid_t_End:      $Model_End
+    Computation_Type: mult
+    Data:
+      Type:           Function
+      Function:       $agent.$storage_cleanliness.$get_value_function
+
+# Situational Ones .............................................................
+Usage_Templates:
+
+  # Toilet
+  # after getting up and before going to sleep
+  - Habit:
+    Name:               Shower.active.start
+    Appliance:          Shower
+    Valid_When:         Active_morning
+    Type:               Start
+    Duration:           901
+    Computation_Type:   add
+    Probability_t:      [60, 120, 720, 900]
+    Probability_Value:  [0.0, 0.01, 0.5, 0.0]
+
+  - Habit:
+    Name:               Shower.active.end
+    Appliance:          Shower
+    Valid_When:         Active_evening
+    Type:               End
+    Duration:           901
+    Computation_Type:   add
+    Probability_t:      [60, 120, 720, 900]
+    Probability_Value:  [0.0, 0.01, 0.5, 0.0]
+
+  - Habit:
+    Name:               Shower.active.we.start
+    Appliance:          Shower
+    Valid_When:         Active_we
+    Type:               Start
+    Duration:           901
+    Computation_Type:   add
+    Probability_t:      [60, 120, 720, 900]
+    Probability_Value:  [0.0, 0.01, 0.5, 0.0]
+
+  - Habit:
+    Name:               Shower.active.we.end
+    Appliance:          Shower
+    Valid_When:         Active_we
+    Type:               End
+    Duration:           901
+    Computation_Type:   add
+    Probability_t:      [60, 120, 720, 900]
+    Probability_Value:  [0.0, 0.01, 0.5, 0.0]
+
+
+# Events -----------------------------------------------------------------------
+Events:
+
+  - Event: 
+    Name:           fix_leak_Shower
+    Type:           Probability
+    Probability:    
+      Type:         Function
+      Function:     $cu.$passedTime_Shower_fix_timer.$get_value_function
+    Active:         False
+
+    Effects:
+      - Target:       $cu.$room_WC.$appliance_Shower
+        Action:       usage_pattern.del
+        Effect_Type:  Target
+        Target_Data:  shower_leak
+
+      - Target:       $cu.$replace_all_agents
+        Action:       event.deactivate.fix_leak_Shower
+        Effect_Type:  None
+
+      - Target:       $cu.$room_WC.$appliance_Shower
+        Action:       event.activate.start_leak_Shower
+        Effect_Type:  None
+
+      - Target:       $cu.$passedTime_Shower_leak_timer
+        Action:       passed_time.empty
+        Effect_Type:  None
+
+  - Event: 
+    Name:           fix_leak_Tap_wc
+    Type:           Probability
+    Probability:    
+      Type:         Function
+      Function:     $cu.$passedTime_Tap_wc_fix_timer.$get_value_function
+    Active:         False
+
+    Effects:
+      - Target:       $cu.$room_WC.$appliance_Tap_wc
+        Action:       usage_pattern.del
+        Effect_Type:  Target
+        Target_Data:  Tap_wc_leak
+
+      - Target:       $cu.$replace_all_agents
+        Action:       event.deactivate.fix_leak_Tap_wc
+        Effect_Type:  None
+
+      - Target:       $cu.$room_WC.$appliance_Tap_wc
+        Action:       event.activate.start_leak_Tap_wc
+        Effect_Type:  None
+
+      - Target:       $cu.$passedTime_Tap_wc_leak_timer
+        Action:       passed_time.empty
+        Effect_Type:  None
+
+  - Event: 
+    Name:           fix_leak_Tap_kitchen
+    Type:           Probability
+    Probability:    
+      Type:         Function
+      Function:     $cu.$passedTime_Tap_kitchen_fix_timer.$get_value_function
+    Active:         False
+
+    Effects:
+      - Target:       $cu.$room_Kitchen.$appliance_Tap_kitchen
+        Action:       usage_pattern.del
+        Effect_Type:  Target
+        Target_Data:  Tap_kitchen_leak
+
+      - Target:       $cu.$replace_all_agents
+        Action:       event.deactivate.fix_leak_Tap_kitchen
+        Effect_Type:  None
+
+      - Target:       $cu.$room_Kitchen.$appliance_Tap_kitchen
+        Action:       event.activate.start_leak_Tap_kitchen
+        Effect_Type:  None
+
+      - Target:       $cu.$passedTime_Tap_kitchen_leak_timer
+        Action:       passed_time.empty
+        Effect_Type:  None
+
+  - Event: 
+    Name:           fix_leak_Toilet
+    Type:           Probability
+    Probability:    
+      Type:         Function
+      Function:     $cu.$passedTime_Toilet_fix_timer.$get_value_function
+    Active:         False
+
+    Effects:
+      - Target:       $cu.$room_WC.$appliance_Toilet
+        Action:       usage_pattern.del
+        Effect_Type:  Target
+        Target_Data:  toilet_leak
+
+      - Target:       $cu.$replace_all_agents
+        Action:       event.deactivate.fix_leak_Toilet
+        Effect_Type:  None
+
+      - Target:       $cu.$room_WC.$appliance_Toilet
+        Action:       event.activate.start_leak_Toilet
+        Effect_Type:  None
+
+      - Target:       $cu.$passedTime_Toilet_leak_timer
+        Action:       passed_time.empty
+        Effect_Type:  None
+
+  - Event: 
+    Name:           fix_leak_Dishwasher
+    Type:           Probability
+    Probability:    
+      Type:         Function
+      Function:     $cu.$passedTime_Dishwasher_fix_timer.$get_value_function
+    Active:         False
+
+    Effects:
+      - Target:       $cu.$room_Kitchen.$appliance_Dishwasher
+        Action:       usage_pattern.del
+        Effect_Type:  Target
+        Target_Data:  dishwasher_leak
+
+      - Target:       $cu.$replace_all_agents
+        Action:       event.deactivate.fix_leak_Dishwasher
+        Effect_Type:  None
+
+      - Target:       $cu.$room_Kitchen.$appliance_Dishwasher
+        Action:       event.activate.start_leak_Dishwasher
+        Effect_Type:  None
+
+      - Target:       $cu.$passedTime_Dishwasher_leak_timer
+        Action:       passed_time.empty
+        Effect_Type:  None
+
+  - Event: 
+    Name:           fix_leak_Washing_machine
+    Type:           Probability
+    Probability:    
+      Type:         Function
+      Function:     $cu.$passedTime_Washing_machine_fix_timer.$get_value_function
+    Active:         False
+
+    Effects:
+      - Target:       $cu.$room_Kitchen.$appliance_Washing_machine
+        Action:       usage_pattern.del
+        Effect_Type:  Target
+        Target_Data:  Washing_machine_leak
+
+      - Target:       $cu.$replace_all_agents
+        Action:       event.deactivate.fix_leak_Washing_machine
+        Effect_Type:  None
+
+      - Target:       $cu.$room_Kitchen.$appliance_Washing_machine
+        Action:       event.activate.start_leak_Washing_machine
+        Effect_Type:  None
+
+      - Target:       $cu.$passedTime_Washing_machine_leak_timer
+        Action:       passed_time.empty
+        Effect_Type:  None
+
+
+# Translators ------------------------------------------------------------------
+Storages:
+
+  - Storage:
+    Name: bladder
+
+    Rates:
+      - Rate:
+        Name:      standard_bladder_increase
+        Type:      constant
+        Const_Val: 0.1
+    
+    Translators:
+      - Translator:
+        Return_above: last
+        Active_for:   default          # the default / catch-all translator to be used
+        Table_x:      [0.0, 600.0, 800.0]
+        Table_y:      [0.0, 0.001, 0.9]
+
+      - Translator:
+        Return_above: last
+        Active_for:   Inactive
+        Table_x:      [0.0, 600.0, 800.0, 900.0]
+        Table_y:      [0.0, 0.0001, 0.001, 0.9]
+
+  - Storage:
+    Name: cleanliness
+
+    Rates:
+      - Rate:
+        Name:      standard_cleanliness_increase
+        Type:      constant
+        Const_Val: 0.1
+    
+    Translators:
+      - Translator:
+        Return_above: last
+        Active_for:   default          # the default / catch-all translator to be used
+        Table_x:      [0.0, 43200, 43201.0]
+        Table_y:      [0.0, 0.0, 1.0]
+
+
+

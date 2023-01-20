@@ -1,0 +1,33 @@
+%YAML 1.2
+---
+
+# General Data
+Name: Shower
+Block_Length:   600
+
+# Usage possibilities
+Usage_Patterns:
+
+  - Pattern:
+    Name:           shower
+    Type:           water_demand
+    Usage_Length:   810
+    Usage_t:        [0, 60, 480, 540]
+    # Usage_val:      [0.0, 18.0, 18.0, 0.0]
+    Usage_val:      [0.0, 20.0, 20.0, 0.0]
+    # Usage_val:      [0.0, 0.0, 0.0, 0.0]
+
+
+# any events & translators at this level
+Events:
+  - Event: 
+    Name: make_clean
+    Type: Activate
+    Switch: True
+
+    Effects:
+    
+      - Target:       $appliance.$replace_user
+        Action:       $storage_cleanliness.storage.empty
+        Effect_Type:  None
+

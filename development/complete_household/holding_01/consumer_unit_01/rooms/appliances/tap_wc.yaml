@@ -1,0 +1,80 @@
+%YAML 1.2
+---
+
+# General Data
+Name: Tap_wc
+Block_Length:   90
+
+# Usage possibilities
+Usage_Patterns:
+  - Pattern:
+    Name:           Tap_wc
+    Type:           waste_water
+    Usage_Length:   90
+    Usage_t:        [10, 30, 70, 85]
+    Usage_val:      [0.0, 0.25, 0.25, 0.0]
+
+  - Pattern:
+    Name:           Tap_wc
+    Type:           water_demand
+    Usage_Length:   90
+    Usage_t:        [10, 30, 70, 85]
+    Usage_val:      [0.0, 0.25, 0.25, 0.0]
+
+
+# any events & translators at this level
+Events:
+  - Event: 
+    Name: after_Tap_wc_use
+    Type: Activate
+    Switch: True
+
+    Effects:
+      - Target:       $appliance.$replace_user
+        Action:       probability.del
+        Effect_Type:  Target
+        Target_Data:  $tap_wc.event_after_toilet
+
+  - Event:
+    Name:   start_leak_Tap_wc
+    Type:   Probability
+    Probability:
+      Type:      Function
+      Function: $cu.$passedTime_Tap_wc_leak_timer.$get_value_function
+
+    Effects:
+
+      - Target:      $appliance
+        Action:      usage_pattern.add
+        Effect_Type: Usage_Pattern
+
+        Pattern:
+          Name:         tap_wc_leak
+          Type:         waste_water
+          Usage_Length: 3600
+          Usage_t:      [0, 3600]
+          Usage_val:    [0.1, 0.1]
+
+      - Target:      $appliance
+        Action:      usage_pattern.add
+        Effect_Type: Usage_Pattern
+
+        Pattern:
+          Name:         tap_wc_leak
+          Type:         water_demand
+          Usage_Length: 3600
+          Usage_t:      [0, 3600]
+          Usage_val:    [0.1, 0.1]
+
+      - Target:      $cu.$replace_all_agents
+        Action:      event.activate.fix_leak_Tap_wc
+        Effect_Type: None
+
+      - Target:      $self
+        Action:      event.deactivate.start_leak_Tap_wc
+        Effect_Type: None
+
+      - Target:      $cu.$passedTime_Tap_wc_fix_timer
+        Action:      passed_time.empty
+        Effect_Type: None
+
